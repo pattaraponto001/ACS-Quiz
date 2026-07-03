@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>แบบทดสอบความรู้ ACS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue: #0284C7;
+    --blue-dark: #0369A1;
+    --blue-bright: #38BDF8;
+    --blue-tint: #E4F1FC;
+    --blue-border: #CFE3F5;
+    --navy: #0B2540;
+    --text-mut: #4C6E90;
+    --white: #FFFFFF;
+    --bg: #F5FAFF;
+    --good: #16A34A;
+    --good-bg: #DCFCE7;
+    --good-border: #86EFAC;
+    --warn: #E11D48;
+    --warn-bg: #FDE6EC;
+    --warn-border: #F9A8C0;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Sarabun', 'Noto Sans Thai', sans-serif;
+    background:var(--bg);
+    color:var(--navy);
+    -webkit-font-smoothing:antialiased;
+  }
+  .header{
+    position:relative;
+    background:linear-gradient(135deg,var(--blue) 0%, var(--blue-bright) 100%);
+    color:white;
+    padding:44px 20px 76px;
+    text-align:center;
+    overflow:hidden;
+  }
+  .header .eyebrow{
+    font-family:'Kanit',sans-serif;
+    font-weight:700;
+    font-size:12px;
+    letter-spacing:3px;
+    opacity:0.85;
+    text-transform:uppercase;
+  }
+  .header h1{
+    font-family:'Kanit',sans-serif;
+    font-weight:800;
+    font-size:clamp(24px,6vw,34px);
+    margin:10px 0 8px;
+  }
+  .header p{
+    font-size:15px;
+    opacity:0.92;
+    margin:0;
+    max-width:520px;
+    margin-inline:auto;
+  }
+  .ecg-line{
+    position:absolute;
+    left:0; right:0; bottom:0;
+    height:46px;
+    opacity:0.55;
+  }
+  .wrap{
+    max-width:640px;
+    margin:-46px auto 0;
+    padding:0 16px 60px;
+    position:relative;
+    z-index:2;
+  }
+  .progress-card{
+    background:var(--white);
+    border:1px solid var(--blue-border);
+    border-radius:16px;
+    padding:16px 20px;
+    box-shadow:0 10px 24px -8px rgba(2,132,199,0.18);
+    display:flex;
+    align-items:center;
+    gap:14px;
+    position:sticky;
+    top:12px;
+    z-index:10;
+  }
+  .progress-track{
+    flex:1;
+    height:8px;
+    background:var(--blue-tint);
+    border-radius:99px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,var(--blue),var(--blue-bright));
+    border-radius:99px;
+    transition:width .3s ease;
+  }
+  .progress-label{
+    font-family:'Kanit',sans-serif;
+    font-weight:700;
+    font-size:13px;
+    color:var(--blue-dark);
+    white-space:nowrap;
+  }
+  #resultPanel{
+    display:none;
+    background:var(--white);
+    border:1px solid var(--blue-border);
+    border-radius:18px;
+    padding:26px 22px;
+    margin-top:18px;
+    text-align:center;
+    box-shadow:0 10px 24px -8px rgba(2,132,199,0.18);
+  }
+  #resultPanel.show{display:block;}
+  #resultPanel .score{
+    font-family:'Kanit',sans-serif;
+    font-weight:800;
+    font-size:44px;
+    color:var(--blue);
+    margin:6px 0;
+  }
+  #resultPanel .badge{
+    display:inline-block;
+    font-family:'Kanit',sans-serif;
+    font-weight:700;
+    font-size:13px;
+    padding:6px 16px;
+    border-radius:99px;
+    margin-top:6px;
+  }
+  .badge.pass{background:var(--good-bg); color:var(--good); border:1px solid var(--good-border);}
+  .badge.retry{background:var(--blue-tint); color:var(--blue-dark); border:1px solid var(--blue-border);}
+  #resultPanel .msg{ font-size:14px; color:var(--text-mut); margin-top:10px;}
+  .retryBtn{
+    margin-top:16px;
+    background:var(--blue-tint);
+    color:var(--blue-dark);
+    border:1px solid var(--blue-border);
+    font-family:'Kanit',sans-serif;
+    font-weight:700;
+    font-size:14px;
+    padding:10px 22px;
+    border-radius:10px;
+    cursor:pointer;
+  }
+  .retryBtn:hover{background:var(--blue-border);}
+
+  .q-list{ margin-top:22px; display:flex; flex-direction:column; gap:16px; }
+  .q-card{
+    background:var(--white);
+    border:1px solid var(--blue-border);
+    border-radius:16px;
+    padding:20px 20px 18px;
+    box-shadow:0 6px 18px -10px rgba(11,37,64,0.12);
+    transition:box-shadow .2s ease;
+  }
+  .q-head{ display:flex; gap:12px; align-items:flex-start; margin-bottom:14px;}
+  .q-num{
+    flex:none;
+    width:30px; height:30px;
+    border-radius:50%;
+    background:var(--blue-tint);
+    color:var(--blue-dark);
+    font-family:'Kanit',sans-serif;
+    font-weight:700;
+    font-size:14px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .q-text{ font-size:15.5px; font-weight:600; line-height:1.5; padding-top:3px;}
+  .options{ display:flex; flex-direction:column; gap:9px; }
+  .opt{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    border:1.5px solid var(--blue-border);
+    border-radius:11px;
+    padding:10px 14px;
+    cursor:pointer;
+    font-size:14.5px;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .opt:hover{ border-color:var(--blue); }
+  .opt input{ display:none; }
+  .opt .letter{
+    flex:none;
+    width:24px; height:24px;
+    border-radius:50%;
+    border:1.5px solid var(--blue-border);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Kanit',sans-serif;
+    font-weight:700;
+    font-size:12px;
+    color:var(--text-mut);
+  }
+  .opt.selected{ background:var(--blue-tint); border-color:var(--blue); }
+  .opt.selected .letter{ background:var(--blue); border-color:var(--blue); color:white; }
+
+  .q-card.correct{ border-color:var(--good-border); }
+  .q-card.incorrect{ border-color:var(--warn-border); }
+  .opt.correct-ans{ background:var(--good-bg); border-color:var(--good); }
+  .opt.correct-ans .letter{ background:var(--good); border-color:var(--good); color:white; }
+  .opt.wrong-ans{ background:var(--warn-bg); border-color:var(--warn); }
+  .opt.wrong-ans .letter{ background:var(--warn); border-color:var(--warn); color:white; }
+  .opt.locked{ cursor:default; }
+
+  .submitBar{
+    position:sticky;
+    bottom:14px;
+    margin-top:22px;
+    display:flex;
+    justify-content:center;
+  }
+  #submitBtn{
+    font-family:'Kanit',sans-serif;
+    font-weight:700;
+    font-size:16px;
+    color:white;
+    background:linear-gradient(135deg,var(--blue),var(--blue-dark));
+    border:none;
+    padding:14px 38px;
+    border-radius:99px;
+    cursor:pointer;
+    box-shadow:0 10px 24px -6px rgba(2,132,199,0.45);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  #submitBtn:hover{ transform:translateY(-1px); box-shadow:0 14px 28px -6px rgba(2,132,199,0.55); }
+  #submitBtn:disabled{ opacity:0.5; cursor:not-allowed; }
+  .hint{
+    text-align:center;
+    font-size:12.5px;
+    color:var(--text-mut);
+    margin-top:8px;
+  }
+  footer{
+    text-align:center;
+    font-size:12px;
+    color:var(--text-mut);
+    padding:30px 16px 10px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="eyebrow">CARDIAC NURSING ORIENTATION · POST-TEST</div>
+  <h1>แบบทดสอบความรู้ ACS</h1>
+  <p>15 ข้อ · ระดับง่าย–ปานกลาง · เลือกคำตอบที่ถูกต้องที่สุดเพียงข้อเดียว</p>
+  <svg class="ecg-line" viewBox="0 0 400 46" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0 23 L60 23 L72 8 L84 38 L96 23 L400 23" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</div>
+
+<div class="wrap">
+
+  <div class="progress-card">
+    <div class="progress-label" id="progressLabel">ตอบแล้ว 0 / 15</div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+
+  <div id="resultPanel">
+    <div style="font-family:'Kanit',sans-serif;font-weight:700;font-size:15px;color:var(--text-mut);">คะแนนของคุณ</div>
+    <div class="score" id="scoreText">0 / 15</div>
+    <span class="badge" id="scoreBadge"></span>
+    <div class="msg" id="scoreMsg"></div>
+    <button class="retryBtn" id="retryBtn" onclick="resetQuiz()">ทำแบบทดสอบใหม่</button>
+  </div>
+
+  <div class="q-list" id="qList"></div>
+
+  <div class="submitBar">
+    <button id="submitBtn" onclick="submitQuiz()" disabled>ส่งคำตอบ</button>
+  </div>
+  <div class="hint" id="hintText">กรุณาตอบให้ครบทุกข้อก่อนส่งคำตอบ</div>
+
+  <footer>Acute Coronary Syndrome · Cardiac Nursing Orientation</footer>
+</div>
+
+<script>
+const QUESTIONS = [
+  { q:"หลอดเลือดหัวใจเส้นใดทำหน้าที่เลี้ยงผนังหัวใจด้านหน้า (Anterior)?", choices:["RCA","LCX","LAD","Aorta"], correct:2 },
+  { q:"ข้อใดคือลำดับความรุนแรงของ ACS จากน้อยไปมาก?", choices:["STEMI → NSTEMI → UA","UA → NSTEMI → STEMI","NSTEMI → UA → STEMI","UA → STEMI → NSTEMI"], correct:1 },
+  { q:"ผู้ป่วยเจ็บแน่นหน้าอก EKG พบ ST elevation ต่อเนื่อง และ Troponin ขึ้นสูง เข้าได้กับภาวะใด?", choices:["Unstable Angina","NSTEMI","STEMI","Stable Angina"], correct:2 },
+  { q:"ข้อใดเรียงลำดับพยาธิสรีรวิทยาของ ACS ได้ถูกต้อง?", choices:["Thrombus → Plaque → Rupture → Occlusion","Plaque → Rupture → Thrombus → Occlusion","Rupture → Plaque → Occlusion → Thrombus","Occlusion → Plaque → Rupture → Thrombus"], correct:1 },
+  { q:"ข้อใดเป็นปัจจัยเสี่ยงที่ \"แก้ไขไม่ได้\" ของ ACS?", choices:["การสูบบุหรี่","ไขมันในเลือดสูง","อายุที่เพิ่มขึ้น","ภาวะอ้วน"], correct:2 },
+  { q:"อาการแบบ Atypical ของ ACS มักพบในกลุ่มผู้ป่วยใด?", choices:["ผู้สูงอายุและผู้ป่วยเบาหวาน","เด็กและวัยรุ่น","นักกีฬาที่แข็งแรง","ผู้ป่วยไข้หวัดทั่วไป"], correct:0 },
+  { q:"การตรวจใดที่ \"ห้ามทำ\" ในผู้ป่วย ACS ระยะเฉียบพลัน?", choices:["EKG","Echocardiogram","Exercise Stress Test","Cardiac Biomarkers"], correct:2 },
+  { q:"คลื่นไฟฟ้าหัวใจส่วนใดแสดงถึงการบีบตัวของหัวใจห้องล่าง?", choices:["P wave","QRS complex","T wave","PR interval"], correct:1 },
+  { q:"หากพบ ST elevation ใน EKG ควรนึกถึงภาวะใดเป็นอันดับแรก?", choices:["Unstable Angina","STEMI","ภาวะปกติ","Arrhythmia ทั่วไป"], correct:1 },
+  { q:"Lead ใดที่บ่งบอกตำแหน่งกล้ามเนื้อหัวใจด้าน Inferior?", choices:["V1–V4","I, aVL, V5, V6","II, III, aVF","V7–V9"], correct:2 },
+  { q:"ตัวอักษร \"A\" ใน MONA-B หมายถึงยาใด?", choices:["Atropine","Aspirin","Amiodarone","Adenosine"], correct:1 },
+  { q:"เป้าหมายมาตรฐานของ Door-to-Balloon Time ในผู้ป่วย STEMI คือเท่าใด?", choices:["ภายใน 30 นาที","ภายใน 60 นาที","ภายใน 90 นาที","ภายใน 120 นาที"], correct:2 },
+  { q:"ตาม KPI โรงพยาบาล เป้าหมายของ Door to EKG คือกี่นาที?", choices:["≤ 5 นาที","≤ 10 นาที","≤ 20 นาที","≤ 30 นาที"], correct:0 },
+  { q:"ผู้ป่วยที่มี Multi-vessel disease หรือ Left main disease เหมาะกับการรักษาด้วยวิธีใด?", choices:["รักษาด้วยยาอย่างเดียว","PTCA/PCI","CABG","ไม่ต้องรักษา"], correct:2 },
+  { q:"ข้อใดคืออาการของภาวะ Cardiogenic Shock?", choices:["ความดันโลหิตสูง ตัวแดง","ความดันโลหิตต่ำ ตัวเย็น ซึม","ไข้สูง หนาวสั่น","ปวดศีรษะรุนแรงอย่างเดียว"], correct:1 },
+];
+
+const LETTERS = ["ก","ข","ค","ง"];
+const answers = new Array(QUESTIONS.length).fill(null);
+let submitted = false;
+
+function renderQuestions(){
+  const list = document.getElementById('qList');
+  list.innerHTML = "";
+  QUESTIONS.forEach((item, qi) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = 'card-' + qi;
+
+    const head = document.createElement('div');
+    head.className = 'q-head';
+    head.innerHTML = `<div class="q-num">${qi+1}</div><div class="q-text">${item.q}</div>`;
+    card.appendChild(head);
+
+    const opts = document.createElement('div');
+    opts.className = 'options';
+    item.choices.forEach((choice, ci) => {
+      const opt = document.createElement('label');
+      opt.className = 'opt';
+      opt.id = `opt-${qi}-${ci}`;
+      opt.innerHTML = `<input type="radio" name="q${qi}" value="${ci}"><span class="letter">${LETTERS[ci]}</span><span>${choice}</span>`;
+      opt.addEventListener('click', () => selectAnswer(qi, ci));
+      opts.appendChild(opt);
+    });
+    card.appendChild(opts);
+    list.appendChild(card);
+  });
+}
+
+function selectAnswer(qi, ci){
+  if(submitted) return;
+  answers[qi] = ci;
+  for(let c=0;c<4;c++){
+    document.getElementById(`opt-${qi}-${c}`).classList.toggle('selected', c===ci);
+  }
+  updateProgress();
+}
+
+function updateProgress(){
+  const answered = answers.filter(a => a !== null).length;
+  document.getElementById('progressLabel').textContent = `ตอบแล้ว ${answered} / ${QUESTIONS.length}`;
+  document.getElementById('progressFill').style.width = (answered / QUESTIONS.length * 100) + '%';
+  document.getElementById('submitBtn').disabled = answered < QUESTIONS.length;
+  document.getElementById('hintText').style.display = answered < QUESTIONS.length ? 'block' : 'none';
+}
+
+function submitQuiz(){
+  if(answers.some(a => a === null)) return;
+  submitted = true;
+  let score = 0;
+  QUESTIONS.forEach((item, qi) => {
+    const card = document.getElementById('card-' + qi);
+    const correctCi = item.correct;
+    const chosenCi = answers[qi];
+    const isCorrect = chosenCi === correctCi;
+    if(isCorrect) score++;
+    card.classList.add(isCorrect ? 'correct' : 'incorrect');
+    for(let c=0;c<4;c++){
+      const optEl = document.getElementById(`opt-${qi}-${c}`);
+      optEl.classList.add('locked');
+      if(c === correctCi) optEl.classList.add('correct-ans');
+      else if(c === chosenCi) optEl.classList.add('wrong-ans');
+    }
+  });
+
+  document.getElementById('submitBtn').style.display = 'none';
+  document.getElementById('hintText').style.display = 'none';
+
+  const pct = Math.round(score / QUESTIONS.length * 100);
+  document.getElementById('scoreText').textContent = `${score} / ${QUESTIONS.length}`;
+  const badge = document.getElementById('scoreBadge');
+  const msg = document.getElementById('scoreMsg');
+  if(pct >= 80){
+    badge.textContent = 'ผ่านเกณฑ์ (≥ 80%)';
+    badge.className = 'badge pass';
+    msg.textContent = 'ทำได้ดีมาก! ความเข้าใจเรื่อง ACS อยู่ในเกณฑ์ดี';
+  } else {
+    badge.textContent = 'ควรทบทวนเพิ่มเติม';
+    badge.className = 'badge retry';
+    msg.textContent = 'ลองทบทวนสไลด์ปฐมนิเทศอีกครั้ง แล้วทำแบบทดสอบใหม่ได้เลย';
+  }
+  const panel = document.getElementById('resultPanel');
+  panel.classList.add('show');
+  panel.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function resetQuiz(){
+  submitted = false;
+  answers.fill(null);
+  document.getElementById('resultPanel').classList.remove('show');
+  document.getElementById('submitBtn').style.display = 'inline-block';
+  renderQuestions();
+  updateProgress();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+renderQuestions();
+updateProgress();
+</script>
+</body>
+</html>
